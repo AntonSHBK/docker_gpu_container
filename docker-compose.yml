@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  openvino_app:
+    build:
+      context: .
+    container_name: openvino_gpu_container
+    environment:
+      - DISPLAY=host.docker.internal:0      # Настройка DISPLAY для X11
+      - XAUTHORITY=${XAUTHORITY}            # Файл авторизации X11
+      - LIBVA_DRIVER_NAME=i965              # Драйвер для Intel GPU
+      - LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix       # Монтируем сокеты X11 для отображения графики
+      - ${XAUTHORITY}:${XAUTHORITY}         # Монтируем файл авторизации для X11
+      - /dev/dri:/dev/dri                   # Монтируем устройства GPU
+    devices:
+      - /dev/dri:/dev/dri                   # Убедись, что устройство GPU монтируется
+    privileged: true
+    network_mode: "host"
+    tty: true
